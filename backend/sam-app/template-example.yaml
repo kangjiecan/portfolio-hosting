@@ -1,0 +1,300 @@
+AWSTemplateFormatVersion: 2010-09-09
+Description: >-
+  sam-app
+Transform: AWS::Serverless-2016-10-31
+Parameters:
+  CognitoClientId:
+    Type: String
+    Description: Cognito App Client ID
+
+  CognitoOAuthTokenEndpoint:
+    Type: String
+    Description: Cognito Domain OAuth2
+
+  CognitoAuthorizerId:
+    Type: String
+    Description: Cognito Authorizer ID
+    Default: authorizer-id-placeholder
+
+Globals:
+  Function:
+    Tracing: Active
+    LoggingConfig:
+      LogFormat: JSON
+  Api:
+    TracingEnabled: true
+    Cors:
+      AllowMethods: "'GET,POST,PUT,DELETE,OPTIONS'"
+      AllowHeaders: "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token,X-Requested-With'"
+      AllowOrigin: "'https://your-domain.com'"
+      AllowCredentials: true
+      MaxAge: "'600'"
+
+    Auth:
+      Authorizers:
+        CognitoAuthorizer:
+          UserPoolArn: !Sub arn:aws:cognito-idp:${AWS::Region}:${AWS::AccountId}:userpool/your-user-pool-id
+          AuthorizerId: !Ref CognitoAuthorizerId
+
+Resources:
+
+  MediaHostIdentityPool:
+    Type: AWS::Cognito::IdentityPool
+    Properties:
+      IdentityPoolName: MediaHostIdentityPool
+      AllowUnauthenticatedIdentities: false
+      CognitoIdentityProviders:
+        - ClientId: your-cognito-client-id
+          ProviderName: cognito-idp.your-region.amazonaws.com/your-user-pool-id
+          ServerSideTokenCheck: true
+
+  CognitoIdentityPoolRole:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          - Effect: Allow
+            Principal:
+              Federated: cognito-identity.amazonaws.com
+            Action: sts:AssumeRoleWithWebIdentity
+            Condition:
+              StringEquals:
+                "cognito-identity.amazonaws.com:aud": !Ref MediaHostIdentityPool
+              "ForAnyValue:StringLike":
+                "cognito-identity.amazonaws.com:amr": authenticated
+      Policies:
+        - PolicyName: MediaHostS3Access
+          PolicyDocument:
+            Version: "2012-10-17"
+            Statement:
+              - Effect: Allow
+                Action:
+                  - s3:PutObject
+                  - s3:DeleteObject
+                Resource:
+                  - arn:aws:s3:::media-host/*
+
+  MediaHostBucketPolicy:
+    Type: AWS::S3::BucketPolicy
+    Properties:
+      Bucket: media-host
+      PolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          - Effect: Allow
+            Principal: "*"
+            Action:
+              - s3:GetObject
+            Resource:
+              - arn:aws:s3:::media-host/*
+
+  IdentityPoolRoleAttachment:
+    Type: AWS::Cognito::IdentityPoolRoleAttachment
+    Properties:
+      IdentityPoolId: !Ref MediaHostIdentityPool
+      Roles:
+        authenticated: !GetAtt CognitoIdentityPoolRole.Arn
+
+  MediaHostBucket:
+    Type: AWS::S3::Bucket
+    Properties:
+      OwnershipControls:
+        Rules:
+          - ObjectOwnership: BucketOwnerEnforced
+      PublicAccessBlockConfiguration:
+        BlockPublicAcls: true
+        BlockPublicPolicy: false
+        IgnorePublicAcls: true
+        RestrictPublicBuckets: false
+
+  getItemsFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      Handler: src/handlers/get-items.getItemsHandler
+      Runtime: nodejs20.x
+      Architectures:
+        - x86_64
+      MemorySize: 128
+      Timeout: 30
+      Description: Handles GET operations for Posts, Media, and User data from DynamoDB tables
+      Policies:
+        - DynamoDBCrudPolicy:
+            TableName: PostTable
+        - DynamoDBCrudPolicy:
+            TableName: MediaTable
+        - DynamoDBCrudPolicy:
+            TableName: UserTable
+      Environment:
+        Variables:
+          REGION: !Ref AWS::Region
+      Events:
+        GetItems:
+          Type: Api
+          Properties:
+            Path: /get
+            Method: GET
+
+  exchangeJWTFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      Handler: src/handlers/exchangeJWT.handler
+      Runtime: nodejs20.x
+      Architectures:
+        - x86_64
+      MemorySize: 128
+      Timeout: 30
+      Description: Handles exchanging authorization code for JWT tokens
+      Environment:
+        Variables:
+          CognitoOAuthTokenEndpoint: https://your-cognito-domain.auth.your-region.amazoncognito.com/oauth2/token
+          COGNITO_CLIENT_ID: !Ref CognitoClientId
+          REDIRECT_URI: "https://your-domain.com/callback"
+      Events:
+        ExchangeToken:
+          Type: Api
+          Properties:
+            Path: /auth2/token
+            Method: POST
+
+  PostItemsFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      Handler: src/handlers/post-items.handler
+      Runtime: nodejs20.x
+      Architectures:
+        - x86_64
+      MemorySize: 128
+      Timeout: 30
+      Environment:
+        Variables:
+          REGION: !Ref AWS::Region
+      Policies:
+        - DynamoDBCrudPolicy:
+            TableName: PostTable
+        - DynamoDBCrudPolicy:
+            TableName: MediaTable
+        - DynamoDBCrudPolicy:
+            TableName: UserTable
+      Events:
+        CreatePost:
+          Type: Api
+          Properties:
+            Path: /post
+            Method: POST
+            Auth:
+              Authorizer: CognitoAuthorizer
+        CreateMedia:
+          Type: Api
+          Properties:
+            Path: /media
+            Method: POST
+            Auth:
+              Authorizer: CognitoAuthorizer
+        EditPost:
+          Type: Api
+          Properties:
+            Path: /post/{postID}
+            Method: PUT
+            Auth:
+              Authorizer: CognitoAuthorizer
+        DeletePost:
+          Type: Api
+          Properties:
+            Path: /post/{postID}
+            Method: DELETE
+            Auth:
+              Authorizer: CognitoAuthorizer
+        DeleteMedia:
+          Type: Api
+          Properties:
+            Path: /media/{mediaID}
+            Method: DELETE
+            Auth:
+              Authorizer: CognitoAuthorizer
+
+  UserTable:
+    Type: AWS::DynamoDB::Table
+    Properties:
+      TableName: UserTable
+      AttributeDefinitions:
+        - AttributeName: userID
+          AttributeType: S
+      KeySchema:
+        - AttributeName: userID
+          KeyType: HASH
+      BillingMode: PAY_PER_REQUEST
+      SSESpecification:
+        SSEEnabled: true
+      PointInTimeRecoverySpecification:
+        PointInTimeRecoveryEnabled: true
+
+  PostTable:
+    Type: AWS::DynamoDB::Table
+    Properties:
+      TableName: PostTable
+      AttributeDefinitions:
+        - AttributeName: postID
+          AttributeType: S
+        - AttributeName: userID
+          AttributeType: S
+      KeySchema:
+        - AttributeName: postID
+          KeyType: HASH
+      GlobalSecondaryIndexes:
+        - IndexName: UserPosts
+          KeySchema:
+            - AttributeName: userID
+              KeyType: HASH
+          Projection:
+            ProjectionType: ALL
+      BillingMode: PAY_PER_REQUEST
+      SSESpecification:
+        SSEEnabled: true
+      PointInTimeRecoverySpecification:
+        PointInTimeRecoveryEnabled: true
+
+  MediaTable:
+    Type: AWS::DynamoDB::Table
+    Properties:
+      TableName: MediaTable
+      AttributeDefinitions:
+        - AttributeName: mediaID
+          AttributeType: S
+        - AttributeName: userID
+          AttributeType: S
+      KeySchema:
+        - AttributeName: mediaID
+          KeyType: HASH
+      GlobalSecondaryIndexes:
+        - IndexName: UserMedia
+          KeySchema:
+            - AttributeName: userID
+              KeyType: HASH
+          Projection:
+            ProjectionType: ALL
+      BillingMode: PAY_PER_REQUEST
+      SSESpecification:
+        SSEEnabled: true
+      PointInTimeRecoverySpecification:
+        PointInTimeRecoveryEnabled: true
+
+Outputs:
+  WebEndpoint:
+   
+
+```yaml
+    Description: API Gateway endpoint URL for Prod stage
+    Value: !Sub "https://${ServerlessRestApi}.execute-api.${AWS::Region}.amazonaws.com/Prod/"
+  UserTableName:
+    Description: Name of the User DynamoDB table
+    Value: !Ref UserTable
+  PostTableName:
+    Description: Name of the Post DynamoDB table
+    Value: !Ref PostTable
+  MediaTableName:
+    Description: Name of the Media DynamoDB table
+    Value: !Ref MediaTable
+  IdentityPoolId:
+    Description: ID of the Cognito Identity Pool
+    Value: !Ref MediaHostIdentityPool
