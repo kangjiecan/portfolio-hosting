@@ -85,6 +85,7 @@ npm run dev
 ## Deployment
 
 ### Backend Deployment
+custom your temperlate, the example tempelate was named temploate-example.ymal in the backend_js root 
 ```bash
 sam deploy
 ```
