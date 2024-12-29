@@ -1,0 +1,29 @@
+.
+├── README.md
+├── eslint.config.js
+├── index.html
+├── package-lock.json
+├── package.json
+├── src
+│   ├── App.jsx
+│   ├── index.css
+│   ├── main.jsx
+│   ├── routes
+│   │   ├── About.jsx
+│   │   ├── Cart.jsx
+│   │   ├── Checkout.jsx
+│   │   ├── Confirmation.jsx
+│   │   ├── Contact.jsx
+│   │   ├── Details.jsx
+│   │   ├── Home.jsx
+│   │   ├── Login.jsx
+│   │   ├── Logout.jsx
+│   │   ├── Signup.jsx
+│   │   └── VerifyEmail.jsx
+│   └── ui
+│       ├── Nav.jsx
+│       └── Sidebar.jsx
+├── tree.txt
+└── vite.config.js
+
+4 directories, 23 files

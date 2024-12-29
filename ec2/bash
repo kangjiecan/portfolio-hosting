@@ -1,0 +1,18 @@
+aws cloudformation create-stack \
+  --stack-name myfrontend1 \
+  --template-body file://ec2-template.yaml \
+  --parameters \
+    ParameterKey=KeyName,ParameterValue=myFrontend \
+    ParameterKey=YourIp,ParameterValue=104.28.55.9/32 \
+    ParameterKey=InstanceType,ParameterValue=t2.micro
+
+
+
+
+    aws ec2 update-security-group-rule-descriptions-ingress \
+  --group-id $(aws ec2 describe-security-groups --filters "Name=group-name,Values=myfrontend1-EC2SecurityGroup-G3Z0qRotAsdc" --query 'SecurityGroups[0].GroupId' --output text) \
+  --ip-permissions '[{"IpProtocol": "tcp", "FromPort": 22, "ToPort": 22, "IpRanges": [{"CidrIp": "99.192.100.85/32"}]}]'
+
+
+
+  scp -i myFrontend.pem -r build/* ec2-user@15.156.206.94:/var/www/html/
