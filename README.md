@@ -1,49 +1,50 @@
-backend/
-├── docker/
-│   ├── dynamodb/
-│   │   └── create-tables.sh
-│   ├── docker/
-│   └── docker-compose.yml
-├── sam-app/
-│   ├── __tests__/
-│   ├── aws-sam/
-│   ├── .gitignore
-│   ├── api_readme.pages
-│   ├── buildspec.yml
-│   ├── env.json
-│   ├── events/
-│   ├── node_modules/
-│   ├── package-lock.json
-│   ├── package.json
-│   ├── README.md
-│   ├── samconfig.toml
-│   └── src/
-│       ├── handlers/
-│       │   ├── exchangeJWT.mjs
-│       │   ├── get-items.mjs
-│       │   └── post-items.mjs
-│       ├── template-example.yaml
-│       └── template.yml
-├── backendAPIs.md
-└── frontend_js/
+.
+├── backend
+│   ├── docker
+│   │   ├── dynamodb
+│   │   │   └── create-tables.sh
+│   │   ├── docker
+│   │   └── docker-compose.yml
+│   ├── sam-app
+│   │   ├── __tests__
+│   │   ├── aws-sam
+│   │   ├── .gitignore
+│   │   ├── api_readme.pages
+│   │   ├── buildspec.yml
+│   │   ├── env.json
+│   │   ├── events
+│   │   ├── node_modules
+│   │   ├── package-lock.json
+│   │   ├── package.json
+│   │   ├── README.md
+│   │   ├── samconfig.toml
+│   │   └── src
+│   │       ├── handlers
+│   │       │   ├── exchangeJWT.mjs
+│   │       │   ├── get-items.mjs
+│   │       │   └── post-items.mjs
+│   │       ├── template-example.yaml
+│   │       └── template.yml
+│   └── backendAPIs.md
+└── frontend_js
     ├── .env
     ├── .env-example
     ├── .gitignore
     ├── bash
     ├── deploy.sh
-    ├── dist/
+    ├── dist
     ├── eslint.config.js
     ├── index.html
-    ├── node_modules/
+    ├── node_modules
     ├── package-lock.json
     ├── package.json
     ├── postcss.config.js
     ├── README.md
-    ├── src/
+    ├── src
     │   ├── App.jsx
     │   ├── index.css
     │   ├── main.jsx
-    │   ├── routes/
+    │   ├── routes
     │   │   ├── About.jsx
     │   │   ├── Create.jsx
     │   │   ├── Details.jsx
@@ -52,7 +53,7 @@ backend/
     │   │   ├── Login.jsx
     │   │   ├── Media.jsx
     │   │   └── Posts.jsx
-    │   └── ui/
+    │   └── ui
     │       ├── Nav.jsx
     │       └── Sidebar.jsx
     ├── tailwind.config.js
