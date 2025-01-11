@@ -11,7 +11,7 @@ const CreatePost = () => {
   const [error, setError] = useState('');
   const [success, setSuccess] = useState(false);
   const [userData, setUserData] = useState(null);
-  const [content, setContent] = useState(''); // Markdown content state
+  const [content, setContent] = useState('');
 
   const { 
     register, 
@@ -69,7 +69,7 @@ const CreatePost = () => {
   };
 
   const handleEditorChange = ({ text }) => {
-    setContent(text); // Update markdown content
+    setContent(text);
   };
 
   const onSubmit = async (data) => {
@@ -88,7 +88,7 @@ const CreatePost = () => {
 
       const postData = {
         title: data.title,
-        content: content, // Save markdown content
+        content: content,
         userID: userInfo.sub || userInfo.userId,
         postID: `po${Math.random().toString(36).substring(2)}${Date.now()}`
       };
@@ -111,7 +111,7 @@ const CreatePost = () => {
 
       setSuccess(true);
       reset();
-      setContent(''); // Reset markdown content
+      setContent('');
     } catch (err) {
       setError(err.message);
       if (err.message.includes('token')) {
@@ -152,7 +152,7 @@ const CreatePost = () => {
           <div>
             <MdEditor
               value={content}
-              style={{ height: '800px', width: '100%' }} // Set custom height and width
+              style={{ height: '800px', width: '100%' }}
               renderHTML={(text) => mdParser.render(text)}
               onChange={handleEditorChange}
             />

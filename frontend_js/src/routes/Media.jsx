@@ -4,7 +4,6 @@ import { CognitoIdentityClient } from "@aws-sdk/client-cognito-identity";
 import { fromCognitoIdentityPool } from "@aws-sdk/credential-provider-cognito-identity";
 import { S3Client, PutObjectCommand, DeleteObjectCommand } from "@aws-sdk/client-s3";
 
-// AWS Configuration and Utils
 const configureS3Client = async (idToken) => {
   const cognitoIdentityClient = new CognitoIdentityClient({
     region: import.meta.env.VITE_AWS_REGION
@@ -33,7 +32,6 @@ const getUserIdFromToken = (idToken) => {
   }
 };
 
-// S3 Operations
 const uploadFileToS3 = async (file, idToken) => {
   if (!file) throw new Error('No file selected');
   
@@ -66,7 +64,6 @@ const deleteFileFromS3 = async (s3Url, idToken) => {
   await s3Client.send(deleteCommand);
 };
 
-// API Operations
 const uploadMediaRecord = async (url, userId, idToken) => {
   const payload = {
     mediaID: `photo_${Date.now()}`,
@@ -122,7 +119,6 @@ const deleteMediaRecord = async (mediaId, idToken) => {
   return response.json();
 };
 
-// Main Component
 const MediaOperations = () => {
   const navigate = useNavigate();
   const [status, setStatus] = useState({ message: '', type: '' });
