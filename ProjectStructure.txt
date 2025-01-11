@@ -1,0 +1,52 @@
+backend/
+  ├─ docker/
+  │   ├─ dynamodb/
+  │   │   └─ create-tables.sh
+  │   ├─ docker/
+  │   └─ docker-compose.yml
+  ├─ sam-app/
+  │   ├─ __tests__/
+  │   ├─ aws-sam/
+  │   ├─ api_readme.pages
+  │   ├─ buildspec.yml
+  │   ├─ env.json
+  │   ├─ events/
+  │   ├─ node_modules/
+  │   ├─ package.json
+  │   ├─ README.md
+  │   ├─ samconfig.toml
+  │   └─ src/
+  │       ├─ handlers/
+  │       │   ├─ exchangeJWT.mjs
+  │       │   ├─ get-items.mjs
+  │       │   └─ post-items.mjs
+  │       ├─ template-example.yaml
+  │       └─ template.yml
+  └─ backendAPIs.md
+
+frontend_js/
+  ├─ src/
+  │   ├─ routes/
+  │   │   ├─ About.jsx
+  │   │   ├─ Create.jsx
+  │   │   ├─ Details.jsx
+  │   │   ├─ EditPost.jsx
+  │   │   ├─ Home.jsx
+  │   │   ├─ Login.jsx
+  │   │   ├─ Media.jsx
+  │   │   └─ Posts.jsx
+  │   └─ ui/
+  │       ├─ Nav.jsx
+  │       └─ Sidebar.jsx
+  ├─ App.jsx
+  ├─ index.css
+  ├─ main.jsx 
+  ├─ .env
+  ├─ .env-example
+  ├─ dist/
+  ├─ eslint.config.js
+  ├─ package.json
+  ├─ postcss.config.js
+  ├─ tailwind.config.js
+  ├─ vite.config.js
+  └─ README.md
