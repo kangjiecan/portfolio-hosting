@@ -1,4 +1,3 @@
-// Initialize DynamoDB client
 import { DynamoDBClient } from '@aws-sdk/client-dynamodb';
 import { 
   DynamoDBDocumentClient, 
@@ -8,9 +7,7 @@ import {
   UpdateCommand
 } from '@aws-sdk/lib-dynamodb';
 
-// Initialize DynamoDB client with correct configuration
-
-const region = process.env.REGION; // Ensure REGION is set in Lambda environment variables
+const region = process.env.REGION;
 const client = new DynamoDBClient({
   region,
 });
@@ -22,7 +19,6 @@ const TABLES = {
   MEDIA: 'MediaTable'
 };
 
-// Helper functions
 const createResponse = (statusCode, body) => {
   console.log('Creating response:', { statusCode, body });
   return {
@@ -47,7 +43,6 @@ const handleError = (error) => {
   });
 };
 
-// Check if item exists
 const checkItemExists = async (tableName, key) => {
   try {
     const command = new GetCommand({
@@ -62,16 +57,13 @@ const checkItemExists = async (tableName, key) => {
   }
 };
 
-// Create new post
 const createPost = async (postData) => {
   const { postID, userID, title, content } = postData;
   
-  // Validate required fields
   if (!title) {
     return createResponse(400, { message: 'Title is required' });
   }
 
-  // Check if post already exists
   const exists = await checkItemExists(TABLES.POST, { postID });
   if (exists) {
     return createResponse(409, { message: 'Post already exists' });
@@ -96,10 +88,8 @@ const createPost = async (postData) => {
   });
 };
 
-// Edit post
 const editPost = async (postID, updateData) => {
   try {
-    // Check if post exists
     const exists = await checkItemExists(TABLES.POST, { postID });
     if (!exists) {
       return createResponse(404, { message: 'Post not found' });
@@ -108,19 +98,16 @@ const editPost = async (postID, updateData) => {
     const updateExpressions = [];
     const expressionAttributeValues = {};
 
-    // Add title to update if provided
     if (updateData.title !== undefined) {
       updateExpressions.push('title = :title');
       expressionAttributeValues[':title'] = updateData.title;
     }
 
-    // Add content to update if provided
     if (updateData.content !== undefined) {
       updateExpressions.push('content = :content');
       expressionAttributeValues[':content'] = updateData.content;
     }
 
-    // Always update the updatedAt timestamp
     updateExpressions.push('updatedAt = :updatedAt');
     expressionAttributeValues[':updatedAt'] = new Date().toISOString();
 
@@ -143,9 +130,7 @@ const editPost = async (postID, updateData) => {
   }
 };
 
-// Delete post (unchanged)
 const deletePost = async (postID) => {
-  // Check if post exists
   const exists = await checkItemExists(TABLES.POST, { postID });
   if (!exists) {
     return createResponse(404, { message: 'Post not found' });
@@ -160,7 +145,6 @@ const deletePost = async (postID) => {
   return createResponse(200, { message: 'Post deleted successfully' });
 };
 
-// Media functions remain unchanged
 const createMedia = async (mediaData) => {
   const { mediaID, userID, type, url } = mediaData;
 
@@ -199,7 +183,6 @@ const deleteMedia = async (mediaID) => {
   return createResponse(200, { message: 'Media deleted successfully' });
 };
 
-// Main handler function
 export const handler = async (event) => {
   try {
     console.log('Event received:', JSON.stringify(event));

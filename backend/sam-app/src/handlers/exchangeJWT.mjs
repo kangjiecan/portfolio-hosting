@@ -11,7 +11,7 @@ const corsHeaders = {
     'Access-Control-Allow-Methods': 'POST, OPTIONS',
     'Access-Control-Allow-Headers': 'Content-Type,Authorization',
     'Access-Control-Allow-Credentials': 'true'
-  };
+};
 
 const exchangeCodeForTokens = async (code, redirectUri) => {
   console.log('Starting token exchange with params:', {
@@ -67,7 +67,6 @@ const getCookieHeaders = (tokens, domain) => {
     const maxAge = 3600;
     cookieOptions.push(`Max-Age=${maxAge}`);
     
-    // Return a single Set-Cookie header string instead of an array
     return {
         'Set-Cookie': `accessToken=${tokens.access_token}; ${cookieOptions.join('; ')}`
     };
@@ -80,7 +79,7 @@ export const handler = async (event) => {
         return {
             statusCode: 200,
             headers: corsHeaders,
-            body: JSON.stringify({}) // Empty object stringified instead of empty string
+            body: JSON.stringify({})
         };
     }
 

@@ -6,14 +6,12 @@ import {
   QueryCommand,
 } from "@aws-sdk/lib-dynamodb";
 
-
-const region = process.env.REGION; // Ensure REGION is set in Lambda environment variables
+const region = process.env.REGION;
 const client = new DynamoDBClient({
   region,
 });
 const docClient = DynamoDBDocumentClient.from(client);
 
-// Table names and index names
 const TABLES = {
   POST: "PostTable",
   MEDIA: "MediaTable",
@@ -25,7 +23,6 @@ const INDEXES = {
   USER_MEDIA: "UserMedia",
 };
 
-// Helper functions
 const createResponse = (statusCode, body) => ({
   statusCode,
   headers: {
@@ -40,7 +37,6 @@ const handleError = (error) => {
   return createResponse(500, { message: "Internal server error" });
 };
 
-// Operation handlers
 async function getPostById(postId) {
   const command = new GetCommand({
     TableName: TABLES.POST,
@@ -113,7 +109,6 @@ async function listMediaByUserId(userId) {
   return createResponse(200, response.Items);
 }
 
-// Main Lambda handler
 export const getItemsHandler = async (event) => {
   try {
     const queryParams = event.queryStringParameters || {};
@@ -139,7 +134,6 @@ export const getItemsHandler = async (event) => {
         }
 
       default:
-        // If no type specified, return all posts (default behavior)
         return await listAllPosts();
     }
   } catch (error) {
