@@ -1,63 +1,7 @@
-.
-├── backend
-│   ├── docker
-│   │   ├── dynamodb
-│   │   │   └── create-tables.sh
-│   │   ├── docker
-│   │   └── docker-compose.yml
-│   ├── sam-app
-│   │   ├── __tests__
-│   │   ├── aws-sam
-│   │   ├── .gitignore
-│   │   ├── api_readme.pages
-│   │   ├── buildspec.yml
-│   │   ├── env.json
-│   │   ├── events
-│   │   ├── node_modules
-│   │   ├── package-lock.json
-│   │   ├── package.json
-│   │   ├── README.md
-│   │   ├── samconfig.toml
-│   │   └── src
-│   │       ├── handlers
-│   │       │   ├── exchangeJWT.mjs
-│   │       │   ├── get-items.mjs
-│   │       │   └── post-items.mjs
-│   │       ├── template-example.yaml
-│   │       └── template.yml
-│   └── backendAPIs.md
-└── frontend_js
-    ├── .env
-    ├── .env-example
-    ├── .gitignore
-    ├── bash
-    ├── deploy.sh
-    ├── dist
-    ├── eslint.config.js
-    ├── index.html
-    ├── node_modules
-    ├── package-lock.json
-    ├── package.json
-    ├── postcss.config.js
-    ├── README.md
-    ├── src
-    │   ├── App.jsx
-    │   ├── index.css
-    │   ├── main.jsx
-    │   ├── routes
-    │   │   ├── About.jsx
-    │   │   ├── Create.jsx
-    │   │   ├── Details.jsx
-    │   │   ├── EditPost.jsx
-    │   │   ├── Home.jsx
-    │   │   ├── Login.jsx
-    │   │   ├── Media.jsx
-    │   │   └── Posts.jsx
-    │   └── ui
-    │       ├── Nav.jsx
-    │       └── Sidebar.jsx
-    ├── tailwind.config.js
-    ├── tree.txt
-    ├── vite.config.js
-    ├── frontendEnviroment.md
-    └── README.md
+The project structure is detailed in the ProjectStructure.txt file.
+
+The /docker folder under the backend is used for local DynamoDB testing.
+
+The sam-app directory contains the SAM template.
+
+The .env file was not pushed to Git. Please follow the provided environment settings to configure it correctly.
