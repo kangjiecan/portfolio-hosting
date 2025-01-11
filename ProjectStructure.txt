@@ -40,8 +40,7 @@ frontend_js/
   │       └─ Sidebar.jsx
   ├─ App.jsx
   ├─ index.css
-  ├─ main.jsx 
-  ├─ .env
+  ├─ main.jsx
   ├─ .env-example
   ├─ dist/
   ├─ eslint.config.js
